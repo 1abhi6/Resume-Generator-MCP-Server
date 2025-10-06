@@ -4,4 +4,9 @@ version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.12"
-dependencies = []
+dependencies = [
+    "docxtpl>=0.20.1",
+    "fastmcp>=2.12.4",
+    "python-docx>=1.2.0",
+    "uvicorn>=0.37.0",
+]
