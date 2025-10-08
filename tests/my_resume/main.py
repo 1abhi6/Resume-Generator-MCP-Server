@@ -32,72 +32,98 @@ def safe_get(obj, *attrs):
 doc = DocxTemplate("test2.docx")
 
 text = """
-Abhishek Gupta
-Phone: +919876543210
-Email: [abhishek@email.com](mailto:abhishek@email.com)
-LinkedIn: [https://www.linkedin.com/in/abhishek](https://www.linkedin.com/in/abhishek)
-GitHub: [https://github.com/abhishek](https://github.com/abhishek)
+Here’s a story version of **Abhishek Gupta’s** resume — including all details and dummy links where needed:
 
-Abhishek is a passionate technologist and entrepreneur based in Mumbai, India, with strong expertise in AI, automation, and full-stack development. He founded Unarrow Digital Solutions and grew it to serve over twenty clients, delivering marketing campaigns that improved client sales by an average of 15–18%. He built automation workflows with Make.com, n8n, and Zapier to save clients hours of manual work each week, and led a team of 8–10 professionals to translate business problems into scalable technical solutions.
+---
 
-In parallel with his entrepreneurial work, Abhishek moved into AI automation as a freelance engineer. Since September 2025 he has been building intelligent chatbots and workflow automations using FastAPI, LangChain, and OpenAI’s GPT models. His freelance work focuses on integrating AI into real business processes, designing RAG-based agents and prompt-engineered solutions, and building monitoring dashboards with Streamlit.
+### **The Journey of Abhishek Gupta: From Curious Learner to AI Innovator**
 
-Skills:
+Abhishek Gupta — an ambitious and forward-thinking technologist from Mumbai, India — has always been driven by curiosity and a desire to create meaningful digital solutions. You can explore his professional footprint on [LinkedIn](https://www.linkedin.com/in/abhishekgupta) or dive into his code on [GitHub](https://github.com/abhishekgupta).
 
-* Programming: Python, FastAPI, LangChain, React.js
-* AI & ML: OpenAI API, Vector Databases, RAG Pipelines
-* Automation: n8n, Zapier, Make.com
-* Tools & Cloud: Docker, Vercel, Render, GitHub Actions
+#### **The Foundation of Skills**
 
-Professional Experience:
+Abhishek’s expertise spans a rich ecosystem of technologies and methodologies.
+He’s proficient in **Programming Languages, AI & LLM Tools** such as Python, LangChain, LangGraph, CrewAI, AutoGen, Agno, RAGs, MCP, LangSmith, RnD, RAG Architecture, and Prompt Engineering.
 
-* Founder and Proprietor, Unarrow Digital Solutions — Mumbai, India (Nov 2023 - Aug 2025)
+His **Backend Development** capabilities include frameworks like **FastAPI** and **FastMCP**, while his **Database & ORM** experience covers **PostgreSQL** and **SQLAlchemy**.
 
-  * Founded and managed a digital marketing agency serving 20+ clients across India.
-  * Delivered campaigns that improved average client sales by 15–18%.
-  * Built automation workflows using Make.com, n8n, and Zapier to streamline client operations.
-  * Led a team of 8–10 professionals and collaborated with clients to solve complex business problems.
+In the **Cloud & DevOps** space, Abhishek is skilled with **AWS (Basics)**, **OCI (AI Services)**, **Docker**, **GitHub Actions**, and **CI/CD Pipelines**.
 
-* AI Automation Engineer (Freelance), Freelance Projects — Remote, India (Sep 2025 - Present)
+Beyond technical expertise, he possesses a strong set of **Soft Skills** — including communication, client management, team building, and leadership — all of which have fueled his professional growth.
 
-  * Developed AI chatbots using FastAPI and LangChain for customer support automation.
-  * Integrated OpenAI GPT models with business workflows for marketing automation.
-  * Implemented prompt engineering best practices for contextual RAG-based agents.
-  * Built dashboards to monitor automation metrics using Streamlit.
+---
 
-Projects:
+#### **Professional Experience**
 
-BharatLens – Explore Geopolitics Through India’s Perspective | LINK: [https://bharatlens.in](https://bharatlens.in)
+**Founder and Proprietor – Unarrow Digital Solutions**
+📍 *Mumbai, India | Nov 2023 – Aug 2025*
 
-* Developed backend using FastAPI with JWT authentication, chat sessions, and OpenAI integration.
-* Designed frontend in React.js, deployed on Vercel with secure API communication.
-* Implemented PostgreSQL (Neon) for persistent data storage and RAG-based knowledge retrieval.
-* Deployed on Render using Docker and GitHub Actions for CI/CD pipelines.
+Abhishek founded **Unarrow Digital Solutions**, a digital marketing agency where he combined his technical expertise with entrepreneurial vision.
 
-Expense Tracker MCP Server | LINK: [https://github.com/abhishek/expense-tracker](https://github.com/abhishek/expense-tracker)
+* He worked with over 20+ businesses, helping them enhance their digital presence.
+* His strategies led to clients noticing a **15%–18% improvement in sales** on average.
+* He built automation workflows using tools like **Make.com**, **n8n**, and **Zapier** to streamline daily operations.
+* Leading a team of 8–10 professionals, he collaborated closely with clients to solve complex business problems using technology-driven approaches.
 
-* Built a secure FastMCP-based expense tracking server using PostgreSQL and SQLAlchemy.
-* Implemented JWT-based authentication with role-based user access control.
-* Developed tools for CRUD operations, budgeting, and automated report generation.
-* Containerized application using Docker and deployed on Render cloud platform.
+---
 
-Resume Generator MCP Server | LINK: [https://github.com/abhishek/resume-generator](https://github.com/abhishek/resume-generator)
+#### **Projects**
 
-* Created an AI-powered resume generator using LangChain and OpenAI API.
-* Implemented dynamic Jinja2 templates to generate .docx resumes automatically.
-* Built modular Pydantic schemas for structured resume data validation.
-* Added support for project-based sections with bullet formatting and hyperlinks.
+**1. BharatLens – Explore Geopolitics Through India’s Perspective**
+🔗 [Project Link](https://example.com/bharatlens) | 🔗 [GitHub Link](https://github.com/example/bharatlens)
 
-Abhishek combines a practical product mindset with hands-on engineering skills. He thrives on building end-to-end systems—backends, frontends, and AI layers—that solve real problems and scale reliably. If you’d like to connect or see demos of his work, reach out via the contact details above.
+BharatLens was an innovative platform designed to provide geopolitical insights through an Indian lens.
+
+* Abhishek developed the backend using **FastAPI (JWT auth, chat sessions, message history, OpenAI integration)**.
+* The app was deployed on **Render** using **Docker + GitHub Actions CI/CD** for seamless integration.
+* He built a secure API layer and integrated **PostgreSQL (Neon)** for persistent storage, enabling RAG-based enhancements and multi-agent architecture for deep analysis.
+
+**2. Expense Tracker MCP Server**
+🔗 [Project Link](https://example.com/expensetracker) | 🔗 [GitHub Link](https://github.com/example/expensetracker)
+
+For this project, Abhishek developed a **microservice for tracking expenses** using **FastMCP** integrated with **PostgreSQL** and **SQLAlchemy**.
+
+* He implemented **JWT-based authentication** with role-based access control for user management.
+* He built **MCP tools** for managing CRUD operations, budgeting, and automated reporting systems — making the project a strong example of applied backend architecture.
+
+---
+
+#### **Certifications**
+
+Abhishek’s dedication to continuous learning is reflected in his certifications:
+
+* **Oracle Cloud Infrastructure 2025 Certified Generative AI Professional**
+  🔗 [View Certificate](https://example.com/oci-genai) – *Sept 2025*
+  Focus areas: LangChain, Vector Databases, Semantic Search, and OCI GenAI.
+
+* **Oracle Cloud Infrastructure 2025 Certified AI Foundations Associate**
+  🔗 [View Certificate](https://example.com/oci-aifoundations) – *Aug 2025*
+  Covered AI/ML fundamentals, OCI AI & ML services, and foundational data engineering concepts.
+
+---
+
+#### **Education**
+
+Abhishek completed his **Bachelor of Science in IT** with **8.1 CGPA** from *Thakur College of Science & Commerce, Kandivali (E), Mumbai* (April 2021 – April 2025).
+
+Prior to that, he completed **HSC** from the same institution in **May 2021** and **SSC** from *St. Joseph English School, Nandhakhal, Virar (W)* with **78.7% in March 2019**.
+
+---
+
+### **Conclusion**
+
+Abhishek Gupta’s journey is a story of relentless learning, innovation, and leadership. From founding his own startup to building advanced RAG-based AI systems, he blends business understanding with technical precision. His ability to automate, optimize, and innovate makes him a promising AI engineer ready to contribute to the next wave of intelligent digital transformation.
+
 
 """
-
 prompt_template = ChatPromptTemplate(
     [
         (
             "system",
             """
-            You are a helpful assistant in extracting relevant values from the text as per the provided schema.
+            You are a helpful assistant in extracting relevant values from the text as per the provided schema. Parse every information as if you are that person. Always use "I" avoid using "He", "Him", "She", "Her", etc.
+            All this data is being processed for resume. So be startegic when choosing text.
+
             ## When extracting the values make sure to adhere the following guidelines.
             1. If the phone number link is separated with dash or spaces then remove all the dashes or spaces.
                 - Eg 1. tel:+1-555-1234 -> tel:+15551234
@@ -110,6 +136,11 @@ prompt_template = ChatPromptTemplate(
             3. If user has only provided the username for any platform, then try to convert it into proper link.
                 - Eg 1. LinkedIn: iautomates -> https://www.linkedin.com/in/iautomates
                 - Eg 2. Github: 1abhi6 -> https://www.github.com/1abhi6
+            
+            4. Make sure to complete the sentence within the given word limit.
+                Avoid such incomplete sentence:
+                Eg 1. Through this course, Abhishek gained hands-on experience designing h
+                Eg 2. He explored visual automation design, API integration, and workflow
             """,
         ),
         ("human", text),
@@ -121,104 +152,6 @@ structured_model = model.with_structured_output(ResumeSchema)
 chain = prompt_template | structured_model
 
 response = chain.invoke({})
-
-# response = {
-#     "name_section": {"candidate_name": "Abhishek Gupta"},
-#     "contact_details_section": {
-#         "phone": {"text": "+919876543210", "link": "tel:+919876543210"},
-#         "email": {"text": "abhishek@email.com", "link": "mailto:abhishek@email.com"},
-#         "linkedin_url": "https://www.linkedin.com/in/abhishek",
-#         "github_url": "https://github.com/abhishek",
-#     },
-#     "skills_section": {
-#         "skills": [
-#             {
-#                 "category": "Programming",
-#                 "items": ["Python", "FastAPI", "LangChain", "React.js"],
-#             },
-#             {
-#                 "category": "AI & ML",
-#                 "items": ["OpenAI API", "Vector Databases", "RAG Pipelines"],
-#             },
-#             {"category": "Automation", "items": ["n8n", "Zapier", "Make.com"]},
-#             {
-#                 "category": "Tools & Cloud",
-#                 "items": ["Docker", "Vercel", "Render", "GitHub Actions"],
-#             },
-#         ]
-#     },
-#     "experience_section": {
-#         "experiences": [
-#             {
-#                 "job_role": "Founder and Proprietor",
-#                 "company_name": "Unarrow Digital Solutions",
-#                 "city": "Mumbai",
-#                 "country": "India",
-#                 "start_month": "Nov",
-#                 "start_year": "2023",
-#                 "end_month": "Aug",
-#                 "end_year": "2025",
-#                 "points": [
-#                     "Founded and managed a digital marketing agency serving 20+ clients across India.",
-#                     "Delivered campaigns that improved average client sales by 15–18%.",
-#                     "Built automation workflows using Make.com, n8n, and Zapier to streamline client operations.",
-#                     "Led a team of 8–10 professionals and collaborated with clients to solve complex business problems.",
-#                 ],
-#             },
-#             {
-#                 "job_role": "AI Automation Engineer (Freelance)",
-#                 "company_name": "Freelance Projects",
-#                 "city": "Remote",
-#                 "country": "India",
-#                 "start_month": "Sep",
-#                 "start_year": "2025",
-#                 "end_month": "Present",
-#                 "end_year": "",
-#                 "points": [
-#                     "Developed AI chatbots using FastAPI and LangChain for customer support automation.",
-#                     "Integrated OpenAI GPT models with business workflows for marketing automation.",
-#                     "Implemented prompt engineering best practices for contextual RAG-based agents.",
-#                     "Built dashboards to monitor automation metrics using Streamlit.",
-#                 ],
-#             },
-#         ]
-#     },
-#     "project_section": {
-#         "projects": [
-#             {
-#                 "project_name": "BharatLens – Explore Geopolitics Through India’s Perspective",
-#                 "project_link": "https://bharatlens.in",
-#                 "points": [
-#                     "Developed backend using FastAPI with JWT authentication, chat sessions, and OpenAI integration.",
-#                     "Designed frontend in React.js, deployed on Vercel with secure API communication.",
-#                     "Implemented PostgreSQL (Neon) for persistent data storage and RAG-based knowledge retrieval.",
-#                     "Deployed on Render using Docker and GitHub Actions for CI/CD pipelines.",
-#                 ],
-#             },
-#             {
-#                 "project_name": "Expense Tracker MCP Server",
-#                 "project_link": "https://github.com/abhishek/expense-tracker",
-#                 "points": [
-#                     "Built a secure FastMCP-based expense tracking server using PostgreSQL and SQLAlchemy.",
-#                     "Implemented JWT-based authentication with role-based user access control.",
-#                     "Developed tools for CRUD operations, budgeting, and automated report generation.",
-#                     "Containerized application using Docker and deployed on Render cloud platform.",
-#                 ],
-#             },
-#             {
-#                 "project_name": "Resume Generator MCP Server",
-#                 "project_link": "https://github.com/abhishek/resume-generator",
-#                 "points": [
-#                     "Created an AI-powered resume generator using LangChain and OpenAI API.",
-#                     "Implemented dynamic Jinja2 templates to generate .docx resumes automatically.",
-#                     "Built modular Pydantic schemas for structured resume data validation.",
-#                     "Added support for project-based sections with bullet formatting and hyperlinks.",
-#                 ],
-#             },
-#         ]
-#     },
-# }
-
 
 # --- Process projects into a list for the template ---
 projects_context = []
@@ -236,10 +169,48 @@ if project_section_data:
                     text="LINK",
                     url=project.project_link,
                     underline=True,
-                    bold=True
+                    bold=True,
                 ),
             }
         )
+
+# --- Process certifications into a list for the template ---
+certifications_context = []
+certification_section_data = safe_get(
+    response, "certification_section", "certifications"
+)
+if certification_section_data:
+    for cert in certification_section_data:
+        certifications_context.append(
+            {
+                "name": cert.name,
+                "month": cert.month,
+                "year": cert.year,
+                "description": cert.description,
+                "link": make_link(
+                    doc, text="LINK", url=cert.link, underline=True, bold=True
+                ),
+            }
+        )
+
+# --- Process educations into a list for the template ---
+educations_context = []
+education_section_data = safe_get(response, "education_section", "educations")
+
+if education_section_data:
+    for edu in education_section_data:
+        educations_context.append(
+            {
+                "degree": edu.degree,
+                "score": edu.score,
+                "institution": edu.institution,
+                "start_month": edu.start_month,
+                "start_year": edu.start_year,
+                "end_month": edu.end_month,
+                "end_year": edu.end_year,
+            }
+        )
+
 
 # --- Safely extract all values into the final context ---
 context = {
@@ -249,32 +220,34 @@ context = {
         safe_get(response, "contact_details_section", "phone", "text"),
         safe_get(response, "contact_details_section", "phone", "link"),
         underline=True,
-        bold=True
+        bold=True,
     ),
     "email_address": make_link(
         doc,
         safe_get(response, "contact_details_section", "email", "text"),
         safe_get(response, "contact_details_section", "email", "link"),
         underline=True,
-        bold=True
+        bold=True,
     ),
     "linkedin_url": make_link(
         doc,
         "LinkedIn",
         safe_get(response, "contact_details_section", "linkedin_url"),
         underline=True,
-        bold=True
+        bold=True,
     ),
     "github_url": make_link(
         doc,
         "GitHub",
         safe_get(response, "contact_details_section", "github_url"),
         underline=True,
-        bold=True
+        bold=True,
     ),
     "skills": safe_get(response, "skills_section", "skills") or [],
     "experiences": safe_get(response, "experience_section", "experiences") or [],
     "projects": projects_context,
+    "certifications": certifications_context,
+    "educations": educations_context,
 }
 
 print(context)

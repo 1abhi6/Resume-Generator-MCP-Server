@@ -157,6 +157,81 @@ class ProjectSection(BaseModel):
 
 
 # -----------------------------
+# Certification Section
+# -----------------------------
+class Certification(BaseModel):
+    """Represents one certification entry."""
+
+    name: str = Field(..., description="The full name of the certification.")
+    link: Optional[str] = Field(
+        "None", description="A verifiable URL for the certificate."
+    )
+    month: str = Field(
+        now.strftime("%b"),
+        description="The month the certification was obtained, e.g., 'Sept'.",
+    )
+    year: str = Field(
+        now.strftime("%Y"),
+        description="The year the certification was obtained, e.g., '2025'.",
+    )
+    description: str = Field(
+        ...,
+        description="A brief, one-line description of the certification's focus.",
+        max_length=70,
+    )
+
+    @field_validator("link")
+    def validate_cert_url(cls, v):
+        if not v:
+            return v
+        if not re.match(r"^https?://[^\s/$.?#].[^\s]*$", v):
+            raise ValueError("Invalid URL format. Must start with http:// or https://")
+        return v
+
+
+class CertificationSection(BaseModel):
+    """Container for all certifications."""
+
+    certifications: List[Certification] = Field(
+        ..., description="A list of the candidate's certifications."
+    )
+
+# -----------------------------
+# Education Section (NEW)
+# -----------------------------
+class Education(BaseModel):
+    """Represents one educational qualification."""
+
+    degree: str = Field(
+        ...,
+        description="The name of the degree or examination (e.g., 'Bachelor of Science in IT').",
+    )
+    score: str = Field(
+        ...,
+        description="The score obtained, including the format (e.g., '8.1 CGPA', '80%').",
+    )
+    institution: str = Field(
+        ..., description="The full name and location of the institution."
+    )
+    start_month: Optional[str] = Field(
+        None, description="The starting month, e.g., 'Apr'."
+    )
+    start_year: Optional[str] = Field(
+        None, description="The starting year, e.g., '2021'."
+    )
+    end_month: str = Field(..., description="The ending/completion month, e.g., 'Apr'.")
+    end_year: str = Field(..., description="The ending/completion year, e.g., '2025'.")
+
+
+class EducationSection(BaseModel):
+    """Container for all educational qualifications."""
+
+    educations: List[Education] = Field(
+        ..., description="A list of the candidate's educational qualifications."
+    )
+
+
+# -----------------------------
 # Final Unified Resume Schema
 # -----------------------------
 class ResumeSchema(BaseModel):
@@ -165,3 +240,6 @@ class ResumeSchema(BaseModel):
     skills_section: Optional[SkillsSection] = None
     experience_section: Optional[ExperienceSection] = None
     project_section: Optional[ProjectSection] = None
+    certification_section: Optional[CertificationSection] = None
+    education_section: Optional[EducationSection] = None
+
