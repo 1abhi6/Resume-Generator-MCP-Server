@@ -1,1 +1,1 @@
-# FastAPI endpoints / MCP tool exposure
+# MCP tool exposure
