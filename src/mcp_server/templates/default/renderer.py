@@ -1,0 +1,1 @@
+# docxtpl + Jinja2 rendering logic for this template

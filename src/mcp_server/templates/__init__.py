@@ -1,0 +1,1 @@
+# Pydantic Schema and Renderer for each template

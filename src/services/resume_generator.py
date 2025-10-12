@@ -1,1 +1,0 @@
-# Core resume generation logic (docxtpl + pdf)

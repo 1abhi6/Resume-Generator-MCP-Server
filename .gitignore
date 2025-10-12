@@ -14,3 +14,9 @@ wheels/
 
 # Diagram
 diagram/
+
+# Legecy codes
+legecy_code/
+
+# Env
+.env

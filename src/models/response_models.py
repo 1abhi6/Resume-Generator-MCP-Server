@@ -1,1 +1,0 @@
-# Response schema for API/MCP output
