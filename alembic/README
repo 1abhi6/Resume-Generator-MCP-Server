@@ -1,0 +1,39 @@
+# Alembic Database Migrations
+
+This directory contains database migration scripts for the Resume Generator MCP Server.
+
+## Commands
+
+### Create a new migration
+```bash
+alembic revision --autogenerate -m "Description of changes"
+```
+
+### Apply migrations (upgrade to latest)
+```bash
+alembic upgrade head
+```
+
+### Rollback one migration
+```bash
+alembic downgrade -1
+```
+
+### View migration history
+```bash
+alembic history
+```
+
+### View current revision
+```bash
+alembic current
+```
+
+## Initial Setup
+
+The database tables are automatically created on application startup using SQLAlchemy's `create_all()`.
+However, for future schema changes, use Alembic migrations to track and apply changes systematically.
+
+## Note
+
+Make sure to have your `.env` file configured with the `DATABASE_URL` before running migrations.

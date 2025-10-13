@@ -7,9 +7,11 @@ import os
 load_dotenv()
 
 
-def upload_to_s3_buffer(file_buffer, bucket_name, object_name):
+def upload_to_s3_buffer(
+    file_buffer, bucket_name, object_name, expiry_in_sec: int = 604800
+):
     """
-    Uploads an in-memory file (BytesIO) to S3 and returns a presigned URL.
+    Uploads an in-memory file (BytesIO) to S3 and returns a presigned URL. For 7 days max
 
     Args:
         file_buffer: BytesIO object containing the file to upload.
@@ -17,7 +19,7 @@ def upload_to_s3_buffer(file_buffer, bucket_name, object_name):
         object_name (str): S3 object key for the uploaded file.
 
     Returns:
-        str: Presigned URL to access the uploaded file (valid for 1 hour).
+        str: Presigned URL to access the uploaded file.
     """
 
     # Create an S3 client using environment credentials
@@ -35,7 +37,7 @@ def upload_to_s3_buffer(file_buffer, bucket_name, object_name):
     presigned_url = s3.generate_presigned_url(
         "get_object",
         Params={"Bucket": bucket_name, "Key": object_name},
-        ExpiresIn=3600,  # 1 hour
+        ExpiresIn=expiry_in_sec,
     )
 
     return presigned_url

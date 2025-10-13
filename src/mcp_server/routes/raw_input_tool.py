@@ -97,10 +97,10 @@ Abhishek Gupta’s journey is a story of relentless learning, innovation, and le
 """
 
 
-def generate_resume_from_text(user_info: str):
+def generate_resume_from_text(user_info: str, template_name: str):
     # print("ENTERED GENERATE_RESUME_FROM_TEXT")
 
-    doc = get_template_from_s3("default")
+    doc = get_template_from_s3(template_name)
 
     # print("LOADED DOC FROM S3")
 
@@ -115,6 +115,7 @@ def generate_resume_from_text(user_info: str):
     )
 
     llm_obj = LLM()
+
     response = llm_obj.get_response(
         resume_pydantic_model=DefaultResumeSchema, prompt_template=prompt_template
     )
@@ -146,12 +147,15 @@ def generate_resume_from_text(user_info: str):
 
     # Upload docx in-memory bytes to S3
     docx_s3_url = upload_to_s3_buffer(
-        buffer, os.getenv("AWS_S3_BUCKET_NAME"), docx_object_name
+        buffer, os.getenv("AWS_S3_BUCKET_NAME"), docx_object_name, expiry_in_sec=604800
     )
 
     # Upload pdf in-memory bytes to S3
     pdf_s3_url = upload_to_s3_buffer(
-        pdf_buffer, os.getenv("AWS_S3_BUCKET_NAME"), pdf_object_name
+        pdf_buffer,
+        os.getenv("AWS_S3_BUCKET_NAME"),
+        pdf_object_name,
+        expiry_in_sec=604800,
     )
 
     # print("GENERATED RESUME (WORD) UPLOADED TO S3")
@@ -162,9 +166,9 @@ def generate_resume_from_text(user_info: str):
     return {
         "docx_resume_url": docx_s3_url,
         "pdf_resume_url": pdf_s3_url,
-        "content": "Sucessfully created Resume! You can download it from the links. Link will be expire in hour. Use docx to edit if you find anything to otherwise PDF is ready to send! All the best!",
+        "content": "Sucessfully created Resume! You can download it from the links. Link will be expire in 7 days. Use docx to edit if you find anything to otherwise PDF is ready to send! All the best!",
     }
 
 
-response = generate_resume_from_text(text)
-print(response)
+# response = generate_resume_from_text(text)
+# print(response)
