@@ -1,15 +1,27 @@
-# # docxtpl + Jinja2 rendering logic for this template
-# # --- Process projects into a list for the template ---
+"""docxtpl + Jinja2 rendering logic for this template
+This module processes default resume sections (projects, certifications, educations, contact info, etc.) and prepares a context dictionary for rendering with docxtpl templates."""
+
 from src.mcp_server.utils import safe_get, make_link
 
-def get_context(doc, response) -> dict:
 
+def get_context(doc, response) -> dict:
+    """
+    Build the context dictionary for docxtpl rendering from the response data.
+
+    Args:
+        doc: DocxTemplate document object (used for hyperlinks).
+        response: Parsed resume data (usually from Pydantic schema).
+
+    Returns:
+        dict: Context dictionary for template rendering.
+    """
+
+    # --- Process projects into a list for the template ---
     projects_context = []
     project_section_data = safe_get(response, "project_section", "projects")
-
     if project_section_data:
         for project in project_section_data:
-            # Create a dictionary for each project
+            # Create a dictionary for each project, including a formatted link
             projects_context.append(
                 {
                     "project_name": project.project_name,
@@ -46,7 +58,6 @@ def get_context(doc, response) -> dict:
     # --- Process educations into a list for the template ---
     educations_context = []
     education_section_data = safe_get(response, "education_section", "educations")
-
     if education_section_data:
         for edu in education_section_data:
             educations_context.append(
@@ -100,4 +111,3 @@ def get_context(doc, response) -> dict:
     }
 
     return context
-

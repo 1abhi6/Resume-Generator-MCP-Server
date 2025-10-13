@@ -10,6 +10,7 @@ from src.mcp_server.agents import LLM
 from src.mcp_server.prompts import PromptConfig
 from src.mcp_server.services import get_template_from_s3, upload_to_s3_buffer
 from src.mcp_server.templates import DefaultResumeSchema, get_default_context
+from src.mcp_server.utils import docx_to_pdf
 
 load_dotenv()
 
@@ -134,22 +135,36 @@ def generate_resume_from_text(user_info: str):
     buffer.seek(0)
 
     # print("SAVED TO MEMORY")
+    # Convert Docx to PDF
+    pdf_buffer = docx_to_pdf(docx_bytes=buffer.getvalue())
 
     # Unique object name for S3
     timestamp = datetime.now(timezone.utc).strftime("%Y%m%d%H%M%S")
-    object_name = f"resumes/resume_{timestamp}.docx"
 
-    # Upload in-memory bytes to S3
-    s3_url = upload_to_s3_buffer(buffer, os.getenv("AWS_S3_BUCKET_NAME"), object_name)
+    docx_object_name = f"resumes/resume_{timestamp}.docx"
+    pdf_object_name = f"resumes/resume_{timestamp}.pdf"
+
+    # Upload docx in-memory bytes to S3
+    docx_s3_url = upload_to_s3_buffer(
+        buffer, os.getenv("AWS_S3_BUCKET_NAME"), docx_object_name
+    )
+
+    # Upload pdf in-memory bytes to S3
+    pdf_s3_url = upload_to_s3_buffer(
+        pdf_buffer, os.getenv("AWS_S3_BUCKET_NAME"), pdf_object_name
+    )
 
     # print("GENERATED RESUME (WORD) UPLOADED TO S3")
 
-    print("✅ Resume uploaded to S3:", s3_url)
+    # print("✅ Resume DOCX uploaded to S3:", docx_s3_url)
+    # print("✅ Resume PDF uploaded to S3:", pdf_s3_url)
 
     return {
-        "resume_url": s3_url,
-        "content": "Sucessfully created Resume! You can download it from the link.",
+        "docx_resume_url": docx_s3_url,
+        "pdf_resume_url": pdf_s3_url,
+        "content": "Sucessfully created Resume! You can download it from the links. Link will be expire in hour. Use docx to edit if you find anything to otherwise PDF is ready to send! All the best!",
     }
 
 
-generate_resume_from_text(text)
+response = generate_resume_from_text(text)
+print(response)
