@@ -8,7 +8,6 @@ from src.mcp_server.schema import UploadURLInput, UploadURLResponse
 
 load_dotenv()
 
-
 def get_upload_url(input: UploadURLInput) -> UploadURLResponse:
     """Generate a pre-signed S3 upload URL for a user file."""
     file_type = input.file_type
@@ -30,6 +29,6 @@ def get_upload_url(input: UploadURLInput) -> UploadURLResponse:
 
 
 # You must create the input model:
-response = get_upload_url(UploadURLInput(file_type="pdf"))
+response = get_upload_url(UploadURLInput(file_type="png"))
 
 print(response)
