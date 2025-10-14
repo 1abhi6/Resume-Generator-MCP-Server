@@ -2,7 +2,7 @@
 import os
 from io import BytesIO
 
-import boto3
+from src.config import s3
 from docxtpl import DocxTemplate
 from dotenv import load_dotenv
 
@@ -21,13 +21,6 @@ def load_docx_from_s3(bucket_name: str, key: str) -> DocxTemplate:
     Returns:
         DocxTemplate: Loaded DocxTemplate object.
     """
-    # Initialize S3 client using credentials from environment variables
-    s3 = boto3.client(
-        "s3",
-        aws_access_key_id=os.getenv("AWS_ACCESS_KEY_ID"),
-        aws_secret_access_key=os.getenv("AWS_SECRET_ACCESS_KEY"),
-        region_name=os.getenv("AWS_S3_REGION"),
-    )
 
     # Download the .docx file from S3 into a memory buffer
     buffer = BytesIO()

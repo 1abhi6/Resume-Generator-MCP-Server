@@ -1,7 +1,7 @@
 # Upload files to AWS S3 + generate expiring links
-import boto3
+
+from src.config import s3
 from dotenv import load_dotenv
-import os
 
 # Load environment variables from .env file
 load_dotenv()
@@ -21,14 +21,6 @@ def upload_to_s3_buffer(
     Returns:
         str: Presigned URL to access the uploaded file.
     """
-
-    # Create an S3 client using environment credentials
-    s3 = boto3.client(
-        "s3",
-        aws_access_key_id=os.getenv("AWS_ACCESS_KEY_ID"),
-        aws_secret_access_key=os.getenv("AWS_SECRET_ACCESS_KEY"),
-        region_name=os.getenv("AWS_S3_REGION"),
-    )
 
     # Upload the file from memory (BytesIO)
     s3.upload_fileobj(file_buffer, bucket_name, object_name)
