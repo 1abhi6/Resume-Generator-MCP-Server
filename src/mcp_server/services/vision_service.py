@@ -1,4 +1,4 @@
-# Image OCR/desctiption using OpenAI Vision
+# Image OCR/description using OpenAI Vision
 
 import base64
 import mimetypes
@@ -13,6 +13,16 @@ load_dotenv()
 
 
 def get_openai_vision(image_bytes, file_key: ProcessResumeInput) -> str:
+    """
+    Uses OpenAI Vision API to analyze a resume image and return a textual description.
+
+    Args:
+        image_bytes (bytes): The image file content in bytes.
+        file_key (ProcessResumeInput): Pydantic model containing the S3 file key.
+
+    Returns:
+        str: The description or extracted text from the resume image.
+    """
     # --- Detect MIME type automatically ---
     mime_type, _ = mimetypes.guess_type(file_key.file_key)
 

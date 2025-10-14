@@ -1,6 +1,6 @@
 # Upload files to AWS S3 + generate expiring links
 
-from src.config import s3
+from src.config import get_aws_client
 from dotenv import load_dotenv
 
 # Load environment variables from .env file
@@ -23,6 +23,7 @@ def upload_to_s3_buffer(
     """
 
     # Upload the file from memory (BytesIO)
+    s3 = get_aws_client("s3")
     s3.upload_fileobj(file_buffer, bucket_name, object_name)
 
     # Generate a temporary presigned URL

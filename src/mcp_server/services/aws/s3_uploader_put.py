@@ -3,7 +3,7 @@ import uuid
 
 from dotenv import load_dotenv
 
-from src.config import s3
+from src.config import get_aws_client
 from src.mcp_server.schema import UploadURLInput, UploadURLResponse
 from src.mcp_server.utils import VALID_FILE_TYPES
 
@@ -31,6 +31,7 @@ def get_upload_url(input: UploadURLInput) -> UploadURLResponse:
     content_type = VALID_FILE_TYPES[file_type]
 
     # Generate a pre-signed URL for uploading the file to S3
+    s3 = get_aws_client("s3")
     upload_url = s3.generate_presigned_url(
         ClientMethod="put_object",
         Params={

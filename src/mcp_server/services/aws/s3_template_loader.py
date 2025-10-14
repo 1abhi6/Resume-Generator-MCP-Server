@@ -2,7 +2,7 @@
 import os
 from io import BytesIO
 
-from src.config import s3
+from src.config import get_aws_client
 from docxtpl import DocxTemplate
 from dotenv import load_dotenv
 
@@ -24,6 +24,8 @@ def load_docx_from_s3(bucket_name: str, key: str) -> DocxTemplate:
 
     # Download the .docx file from S3 into a memory buffer
     buffer = BytesIO()
+
+    s3 = get_aws_client("s3")
     s3.download_fileobj(bucket_name, key, buffer)
     buffer.seek(0)
 
