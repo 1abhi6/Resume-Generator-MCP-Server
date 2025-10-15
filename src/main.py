@@ -17,20 +17,16 @@ from src.mcp_server.database import (
     initialize_database,
     resume_repository,
 )
-from src.mcp_server.routes import generate_resume_from_text
+from src.mcp_server.routes import (
+    enhance_resume_for_existing_resume,
+    generate_resume_from_text,
+)
 from src.mcp_server.schema import (
-    ProcessResumeInput,
     TemplateSelectionInput,
     UploadURLInput,
     UploadURLResponse,
 )
-from src.mcp_server.services import (
-    extract_resume_text_from_s3,
-    get_openai_vision,
-    get_upload_url,
-    process_resume,
-)
-from src.mcp_server.utils import IMAGE_FILE_TYPE
+from src.mcp_server.services import get_upload_url
 
 load_dotenv()
 
@@ -172,30 +168,71 @@ def generate_file_upload_url(input: UploadURLInput) -> UploadURLResponse:
     return response
 
 
+# Upload file and select resume (Resume Ehnancer)
+@mcp.tool(
+    name="Resume Enhancer",
+    description="Enhance an uploaded resume using a selected template; returns DOCX and PDF download URLs and saves a resume record (non-blocking).",
+)
 def enhance_resume_from_existing(
     existing_resume: UploadURLResponse, template_name: TemplateSelectionInput
+):
+    """
+    Enhance an existing resume with a chosen template and return download links.
+
+    Parameters
+    - existing_resume (UploadURLResponse): Get it from `get_upload_url_for_resume` tool
+    - template_name (TemplateSelectionInput): User's template choice.
+
+    Returns: JSONResponse containing:
+                {
+                    "docx_resume_url": "<S3 link to Word resume>",
+                    "pdf_resume_url": "<S3 link to PDF resume>",
+                    "content:: "A general message"
+                }
+    """
+    access_token: AccessToken = get_access_token()
+    user_id = jwt.get_unverified_claims(access_token.token)["sub"]
+
+    file_key = existing_resume.file_key
+
+    template_selected = template_name.template_name
+
+    response = enhance_resume_for_existing_resume(
+        file_key=file_key, template_selected=template_selected
+    )
+
+    docx_link = response.get("docx_resume_url")
+    pdf_link = response.get("pdf_resume_url")
+
+    # Save resume data to database
+    try:
+        resume_record = resume_repository.create_resume(
+            user_id=user_id,
+            template_selected=template_name,
+            pdf_link=pdf_link or "",
+            doc_link=docx_link or "",
+        )
+        print(f"Resume record created with ID: {resume_record.id}")
+    except Exception as e:
+        print(f"Error saving resume to database: {e}")
+        # Continue even if database save fails
+
+    return JSONResponse(response)
+
+
+def generate_resume_from_jd_and_existing(
+    existing_resume: UploadURLResponse,
+    template_name: TemplateSelectionInput,
+    job_descrption: str,
 ):
     access_token: AccessToken = get_access_token()
     user_id = jwt.get_unverified_claims(access_token.token)["sub"]
 
     file_key = existing_resume.file_key
 
-    file_bytes = process_resume(ProcessResumeInput(file_key=file_key))
+    template_selected = template_name.template_name
 
-    file_ext = file_key.lower().split(".")[-1]
-
-    if file_ext in IMAGE_FILE_TYPE:
-        # Send to OpenAI vision server
-        description = get_openai_vision(image_bytes=file_bytes, file_key=file_key)
-
-    # Textract service
-    description = extract_resume_text_from_s3(
-        bucket_name=os.getenv("AWS_S3_BUCKET_NAME"), file_key=file_key
-    )
-
-
-def generate_resume_from_jd_and_existing():
-    pass
+    
 
 
 def generate_resume_from_linkedin_profile():

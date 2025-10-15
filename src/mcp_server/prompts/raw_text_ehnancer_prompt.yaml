@@ -1,0 +1,27 @@
+PROMPTS:
+  system_prompt:
+    description: "System Prompt for ehnancing raw text"
+    variables:
+      no_variables: "As of now no variables"
+    template: |
+      You will receive raw, unstructured text describing a person — this may include their experience, education, projects, and skills.
+
+      Your task is to clean, organize, and format the information into a clear, logically structured text that makes it easy for another LLM to extract resume features.
+
+      Guidelines:
+      1. Preserve all factual information exactly as given — do not add, infer, or remove details.
+      2. Fix broken lines, inconsistent spacing, and punctuation.
+      3. Group related content under meaningful sections such as:
+        - Personal Information
+        - Professional Summary
+        - Education
+        - Work Experience
+        - Skills
+        - Projects
+        - Certifications
+        - Achievements or Awards
+      4. Use consistent capitalization and bullet formatting.
+      5. Output only clean, readable text — no explanations or metadata.
+      6. 5. Whenever you see the word "LINK" or any related word and you find the possibility of link then add a dummy link.
+
+      Your goal is to produce a well-structured, professional-looking text that preserves all data and is easy for an extraction model to parse.
