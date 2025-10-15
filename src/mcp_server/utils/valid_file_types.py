@@ -5,3 +5,6 @@ VALID_FILE_TYPES = {
     "jpg": "image/jpeg",
     "jpeg": "image/jpeg",
 }
+
+IMAGE_FILE_TYPE = ["png", "jpg", "jpeg"]
+DOCUMENT_FILE_TYPE = ["pdf", "docx"]

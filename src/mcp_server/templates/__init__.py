@@ -6,3 +6,7 @@ from .default.renderer import get_context as get_default_context
 
 
 # Modern Template
+from .modern.schema import ModernResumeSchema
+
+
+from .decide_schema import get_schema

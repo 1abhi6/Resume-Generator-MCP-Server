@@ -18,8 +18,19 @@ from src.mcp_server.database import (
     resume_repository,
 )
 from src.mcp_server.routes import generate_resume_from_text
-from src.mcp_server.schema import UploadURLInput, TemplateSelectionInput
-from src.mcp_server.services import get_upload_url
+from src.mcp_server.schema import (
+    ProcessResumeInput,
+    TemplateSelectionInput,
+    UploadURLInput,
+    UploadURLResponse,
+)
+from src.mcp_server.services import (
+    extract_resume_text_from_s3,
+    get_openai_vision,
+    get_upload_url,
+    process_resume,
+)
+from src.mcp_server.utils import IMAGE_FILE_TYPE
 
 load_dotenv()
 
@@ -84,9 +95,9 @@ def check_server_health_status() -> JSONResponse:
         "This tool returns temporary download links (PDF and DOCX) for the generated resume."
     ),
 )
-def generate_resume_from_text(
+def generate_resume_from_text_tool(
     user_info: str, template_name: TemplateSelectionInput
-) -> str:
+) -> JSONResponse:
     """
     Generates a resume using free-form user-provided text and a selected template.
 
@@ -144,7 +155,7 @@ def generate_resume_from_text(
         "like 'process_resume_from_file' or 'customize_resume_with_job_description'."
     ),
 )
-def generate_file_upload_url(input: UploadURLInput):
+def generate_file_upload_url(input: UploadURLInput) -> UploadURLResponse:
     """
     Generates a temporary AWS S3 pre-signed URL for uploading a resume file.
 
@@ -155,14 +166,32 @@ def generate_file_upload_url(input: UploadURLInput):
     - `upload_url` (str): The temporary URL where the file should be uploaded.
     - `file_key` (str): The key identifier used to reference the uploaded file later.
 
-    Once the file is uploaded, include the `file_key` in subsequent tool calls.
+    Once the file is uploaded, include the `UploadURLResponse` in subsequent tool calls.
     """
     response = get_upload_url(input=input)
     return response
 
 
-def enhance_resume_from_existing():
-    pass
+def enhance_resume_from_existing(
+    existing_resume: UploadURLResponse, template_name: TemplateSelectionInput
+):
+    access_token: AccessToken = get_access_token()
+    user_id = jwt.get_unverified_claims(access_token.token)["sub"]
+
+    file_key = existing_resume.file_key
+
+    file_bytes = process_resume(ProcessResumeInput(file_key=file_key))
+
+    file_ext = file_key.lower().split(".")[-1]
+
+    if file_ext in IMAGE_FILE_TYPE:
+        # Send to OpenAI vision server
+        description = get_openai_vision(image_bytes=file_bytes, file_key=file_key)
+
+    # Textract service
+    description = extract_resume_text_from_s3(
+        bucket_name=os.getenv("AWS_S3_BUCKET_NAME"), file_key=file_key
+    )
 
 
 def generate_resume_from_jd_and_existing():

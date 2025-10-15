@@ -13,7 +13,7 @@ class LLM:
             api_key=os.getenv("OPENAI_API_KEY"), model="gpt-4o-mini"
         )
 
-    def get_response(
+    def get__structured_response(
         self, resume_pydantic_model: BaseModel, prompt_template: ChatPromptTemplate
     ):
         structured_model = self.model.with_structured_output(resume_pydantic_model)
@@ -22,3 +22,11 @@ class LLM:
         response = chain.invoke({})
 
         return response
+
+    def get_response(self, prompt_template: ChatPromptTemplate):
+        chain = prompt_template | self.model
+
+        response = chain.invoke({})
+
+        return response
+    
