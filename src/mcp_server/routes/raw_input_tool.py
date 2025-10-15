@@ -119,12 +119,12 @@ def generate_resume_from_text(user_info: str, template_name: str):
 
     llm_obj = LLM()
 
-    enhanced_description = llm_obj.get_response(prompt_template=prompt_template)
+    enhanced_persona = llm_obj.get_response(prompt_template=prompt_template)
 
     # Apply shared logic (formatting, template merging, additional validation)
     # and return the final structured resume output.
     response = get_common_logic(
-        enhanced_description=enhanced_description, template_selected=template_name
+        enhanced_persona=enhanced_persona, template_selected=template_name
     )
 
     return response

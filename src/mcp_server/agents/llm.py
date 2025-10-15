@@ -20,7 +20,9 @@ class LLM:
         )
 
     def get__structured_response(
-        self, resume_pydantic_model: BaseModel, prompt_template: ChatPromptTemplate
+        self,
+        resume_pydantic_model: BaseModel,
+        prompt_template: ChatPromptTemplate,
     ) -> dict:
         """
         Produce a structured response validated/parsed into the provided pydantic model.
@@ -47,6 +49,7 @@ class LLM:
 
         Returns the response.content string from the model invocation.
         """
+
         chain = prompt_template | self.model
 
         response = chain.invoke({})

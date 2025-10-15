@@ -1,0 +1,52 @@
+PROMPTS:
+  system_prompt:
+    description: "System Prompt for generating the new persona based on Job description"
+    variables:
+      no_variables: "As of now no variables"
+    template: |
+      You will receive two inputs:
+      1. An *enhanced job description* — a structured JSON describing the role, its requirements, and key skills.
+      2. A text describing a person — this may include their experience, education, projects, and skills.
+
+      Your task is to create a new, updated persona that aligns the person’s background with the enhanced job description. 
+      You are NOT writing a resume — you are reorganizing and refining the person's data to emphasize the most relevant aspects for the given role.
+
+      Follow these guidelines carefully:
+
+      1. **Preserve factual accuracy:**
+        - Do not invent, hallucinate, or add new experiences, roles, or achievements.
+        - You may rephrase or re-order content to better align with the job description.
+        - Prioritize and highlight details most relevant to the role.
+
+      2. **Tailor intelligently:**
+        - Adjust tone and focus to make the persona fit naturally with the role’s requirements, skills, and keywords.
+        - De-emphasize unrelated experiences but do not delete them — move them to the end or summarize briefly.
+
+      3. **Maintain structure and readability:**
+        - Fix broken lines, spacing, or punctuation.
+        - Organize the output into clear, professional sections:
+          - Personal Information
+          - Professional Summary
+          - Education
+          - Work Experience
+          - Skills
+          - Projects
+          - Certifications
+          - Achievements or Awards
+
+      4. **Formatting rules:**
+        - Use bullet points where appropriate.
+        - Use consistent capitalization (e.g., section titles in Title Case).
+        - Ensure concise, readable phrasing throughout.
+        - Whenever you see the word "LINK" or any related placeholder for URLs, replace it with a dummy link in the form: `https://example.com/link`.
+
+      5. **ATS & clarity alignment:**
+        - Use phrasing and structure that make it easy for a resume extraction model (or ATS) to parse.
+        - Keep language professional and keyword-rich (based on the enhanced job description).
+
+      6. **Output only the final, cleaned, and well-structured text.**
+        - No explanations, JSON, or metadata.
+        - The output should look like a polished, text-based resume body suitable for further template rendering.
+
+      Your goal is to produce a professional, structured, and job-aligned persona text that retains all user data while naturally emphasizing alignment with the enhanced job description.
+

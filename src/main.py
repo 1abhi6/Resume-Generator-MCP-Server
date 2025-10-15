@@ -231,6 +231,7 @@ def generate_resume_from_jd_and_existing(
     file_key = existing_resume.file_key
 
     template_selected = template_name.template_name
+    
 
     
 

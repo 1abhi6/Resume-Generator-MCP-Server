@@ -19,7 +19,7 @@ load_dotenv()
 
 
 def get_common_logic(
-    enhanced_description: str,
+    enhanced_persona: str,
     template_selected: str,
     bucket_name: str = os.getenv("AWS_S3_BUCKET_NAME"),
 ):
@@ -33,7 +33,7 @@ def get_common_logic(
     prompt_template = ChatPromptTemplate(
         [
             ("system", system_prompt),
-            ("human", enhanced_description),
+            ("human", enhanced_persona),
         ]
     )
 

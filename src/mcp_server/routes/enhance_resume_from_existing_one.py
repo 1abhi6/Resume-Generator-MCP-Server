@@ -57,10 +57,10 @@ def enhance_resume_for_existing_resume(file_key: str, template_selected: str) ->
     )
 
     llm_obj = LLM()
-    enhanced_description = llm_obj.get_response(prompt_template=prompt_template)
+    enhanced_persona = llm_obj.get_response(prompt_template=prompt_template)
 
     response = get_common_logic(
-        enhanced_description=enhanced_description,
+        enhanced_description=enhanced_persona,
         template_selected=template_selected,
         bucket_name=bucket_name,
     )
