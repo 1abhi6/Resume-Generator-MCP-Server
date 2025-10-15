@@ -20,6 +20,7 @@ from src.mcp_server.database import (
 from src.mcp_server.routes import (
     enhance_resume_for_existing_resume,
     generate_resume_from_text,
+    job_match,
 )
 from src.mcp_server.schema import (
     TemplateSelectionInput,
@@ -148,7 +149,7 @@ def generate_resume_from_text_tool(
         "This tool returns a temporary AWS S3 upload URL and a file_key. "
         "The client must upload the actual file bytes to this URL before calling other tools. "
         "Once the file is uploaded, the file_key should be passed to processing tools "
-        "like 'process_resume_from_file' or 'customize_resume_with_job_description'."
+        "like 'Resume Enhancer' or 'Generate Resume from Job Description and Existing Resume'."
     ),
 )
 def generate_file_upload_url(input: UploadURLInput) -> UploadURLResponse:
@@ -168,7 +169,7 @@ def generate_file_upload_url(input: UploadURLInput) -> UploadURLResponse:
     return response
 
 
-# Upload file and select resume (Resume Ehnancer)
+# Upload file and select resume (Resume Enhancer)
 @mcp.tool(
     name="Resume Enhancer",
     description="Enhance an uploaded resume using a selected template; returns DOCX and PDF download URLs and saves a resume record (non-blocking).",
@@ -219,21 +220,60 @@ def enhance_resume_from_existing(
 
     return JSONResponse(response)
 
-
+# Generate Resume from Job Description and Existing Resume
+@mcp.tool(
+    title="Generate Resume from Job Description and Existing Resume",
+    description="Generates a tailored resume by combining an existing resume with a provided job description using the selected template.",
+)
 def generate_resume_from_jd_and_existing(
     existing_resume: UploadURLResponse,
     template_name: TemplateSelectionInput,
     job_descrption: str,
 ):
+    """
+    Generate a new, customized resume by aligning the user’s existing resume
+    with a provided job description and rendering it using a chosen template.
+
+    Args:
+        existing_resume (UploadURLResponse): The uploaded existing resume reference (file key).
+        template_name (TemplateSelectionInput): The selected resume template name.
+        job_descrption (str): The job description text used to tailor the resume.
+
+    Returns:
+        JSONResponse: A JSON response containing presigned S3 links for the generated
+                      DOCX and PDF resumes along with related metadata.
+    """
+
     access_token: AccessToken = get_access_token()
     user_id = jwt.get_unverified_claims(access_token.token)["sub"]
 
     file_key = existing_resume.file_key
 
     template_selected = template_name.template_name
-    
 
-    
+    response = job_match(
+        file_key=file_key,
+        template_selected=template_selected,
+        job_description=job_descrption,
+    )
+
+    docx_link = response.get("docx_resume_url")
+    pdf_link = response.get("pdf_resume_url")
+
+    # Save resume data to database
+    try:
+        resume_record = resume_repository.create_resume(
+            user_id=user_id,
+            template_selected=template_name,
+            pdf_link=pdf_link or "",
+            doc_link=docx_link or "",
+        )
+        print(f"Resume record created with ID: {resume_record.id}")
+    except Exception as e:
+        print(f"Error saving resume to database: {e}")
+        # Continue even if database save fails
+
+    return JSONResponse(response)
 
 
 def generate_resume_from_linkedin_profile():
