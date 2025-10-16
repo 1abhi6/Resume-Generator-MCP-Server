@@ -21,11 +21,13 @@ from src.mcp_server.routes import (
     enhance_resume_for_existing_resume,
     generate_resume_from_text,
     job_match,
+    linkedin,
 )
 from src.mcp_server.schema import (
     TemplateSelectionInput,
     UploadURLInput,
     UploadURLResponse,
+    ValidateURL,
 )
 from src.mcp_server.services import get_upload_url
 
@@ -220,6 +222,7 @@ def enhance_resume_from_existing(
 
     return JSONResponse(response)
 
+
 # Generate Resume from Job Description and Existing Resume
 @mcp.tool(
     title="Generate Resume from Job Description and Existing Resume",
@@ -275,9 +278,40 @@ def generate_resume_from_jd_and_existing(
 
     return JSONResponse(response)
 
+@mcp.tool(name="Get Resume from Linkedin URL", description="Helps to generate resume from linkedin URL!")
+def generate_resume_from_linkedin_profile(
+    linkedin_url: ValidateURL,
+    template_name: TemplateSelectionInput,
+):
+    """
+    Helps to generate resume from linkedin URL
+    """
+    access_token: AccessToken = get_access_token()
+    user_id = jwt.get_unverified_claims(access_token.token)["sub"]
 
-def generate_resume_from_linkedin_profile():
-    pass
+    url = linkedin_url.link
+    template_selected = template_name.template_name
+
+    # Get response from LinkedIn
+    response = linkedin(linkedin_url=url, template_selected=template_selected)
+
+    docx_link = response.get("docx_resume_url")
+    pdf_link = response.get("pdf_resume_url")
+
+    # Save resume data to database
+    try:
+        resume_record = resume_repository.create_resume(
+            user_id=user_id,
+            template_selected=template_name,
+            pdf_link=pdf_link or "",
+            doc_link=docx_link or "",
+        )
+        print(f"Resume record created with ID: {resume_record.id}")
+    except Exception as e:
+        print(f"Error saving resume to database: {e}")
+        # Continue even if database save fails
+
+    return JSONResponse(response)
 
 
 # Auth Custom Route
