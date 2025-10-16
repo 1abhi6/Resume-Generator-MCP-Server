@@ -5,3 +5,4 @@ from .vision_service import get_openai_vision
 from .aws.s3_uploader_put import get_upload_url
 from .aws.s3_file_downloader import process_resume
 from .aws.textract_service import extract_resume_text_from_s3
+from .scrape_linkedin import ScrapeLinkedIn

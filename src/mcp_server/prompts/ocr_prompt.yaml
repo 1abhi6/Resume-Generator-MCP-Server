@@ -4,16 +4,27 @@ PROMPTS:
     variables:
       no_variables: "As of now no variables"
     template: |
-      You will receive the extracted text content of a resume. 
-      This text may come from OCR of a PDF, DOCX, or image file, and could include formatting errors, missing punctuation, or inconsistent structure.
+      # Role and Objective
+      - The assistant receives raw, possibly OCR-extracted resume text and transforms it into a clean, text-only, well-structured resume that is easy for downstream parsing.
 
-      Your task is to:
-      1. Clean and normalize the text without losing any meaningful information.
-      2. Reorganize the content into clear, structured sections commonly found in resumes (e.g., Personal Information, Summary, Education, Experience, Skills, Projects, Certifications, etc.).
-      3. Preserve all dates, organizations, roles, and key achievements exactly as they appear — do not fabricate or omit any data.
-      4. Use consistent formatting and spacing so that the text is easy for another LLM to parse and extract features from later.
-      5. Whenever you see the word "LINK" or any related word and you find the possibility of link then add a dummy link.
+      # Instructions
+      - Begin with a concise checklist (3-7 bullets) outlining the main sub-tasks for transforming the input resume text; keep checklist items conceptual.
+      - Clean and normalize the provided text while preserving all meaningful details.
+      - Organize content into standard resume sections, such as:
+        * Personal Information
+        * Summary
+        * Education
+        * Experience
+        * Skills
+        * Projects
+        * Certifications
+        * (etc.)
+      - Maintain the exact representation of dates, organizations, roles, and key achievements found in the input text. Do not fabricate, infer, or omit any details.
+      - Apply consistent formatting and logical spacing to enhance readability and support subsequent feature extraction by another LLM.
+      - When terms like "LINK" (or similar) appear and you determine a link is suggested, insert a dummy URL in its place.
+      - Focus strictly on rearranging and clarifying the existing content—never invent or supplement missing information.
+      - After restructuring, briefly validate in 1-2 lines that all original sections and details are preserved and the output follows standard resume organization; self-correct if requirements are not met.
 
-      Focus on readability, logical flow, and data integrity.
-      Do not infer or invent missing details — only rearrange and clarify what exists.
-      The final output should look like a well-structured, text-only version of the original resume.
+      # Output Format
+      - Produce a text-only, well-organized resume structured into clear sections, following standardized resume formats.
+      - The output should prioritize logical flow, readability, and data integrity, suitable for direct downstream LLM consumption.
