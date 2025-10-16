@@ -278,14 +278,45 @@ def generate_resume_from_jd_and_existing(
 
     return JSONResponse(response)
 
-@mcp.tool(name="Get Resume from Linkedin URL", description="Helps to generate resume from linkedin URL!")
+
+# Get resume from Linkedin URL
+@mcp.tool(
+    title="Generate Resume from LinkedIn Profile",
+    description=(
+        "Generates a professional, ready-to-send resume directly from a user's LinkedIn profile. "
+        "The tool scrapes structured data from the provided LinkedIn URL, processes it through AI-based "
+        "resume extraction and formatting pipelines, and renders a resume using the selected template. "
+        "Outputs include both a downloadable Word (.docx) and PDF version of the generated resume, "
+        "each stored temporarily on AWS S3 with an expiring link."
+    ),
+)
 def generate_resume_from_linkedin_profile(
     linkedin_url: ValidateURL,
     template_name: TemplateSelectionInput,
 ):
     """
-    Helps to generate resume from linkedin URL
+    Generate a professional resume directly from a LinkedIn profile URL using a predefined template.
+
+    This MCP tool automates the process of transforming a user’s LinkedIn data into an ATS-friendly,
+    template-based resume. It extracts and structures the information from the LinkedIn profile,
+    formats it using the selected Jinja2/Docx template, and uploads the resulting files to AWS S3.
+
+    Parameters
+    ----------
+    linkedin_url : ValidateURL
+        A validated LinkedIn profile URL provided by the user.
+    template_name : TemplateSelectionInput
+        The name of the predefined resume template selected by the user.
+
+    Returns
+    -------
+    JSONResponse
+        A JSON response containing:
+            - `docx_resume_url`: AWS S3 link to the generated Word resume.
+            - `pdf_resume_url`: AWS S3 link to the generated PDF resume.
+        Both links are temporary and automatically expire within 7 hours.
     """
+
     access_token: AccessToken = get_access_token()
     user_id = jwt.get_unverified_claims(access_token.token)["sub"]
 
