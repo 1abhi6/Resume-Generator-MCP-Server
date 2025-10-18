@@ -107,24 +107,25 @@ def generate_resume_from_text(user_info: str, template_name: str):
       matching the chosen template's output format).
     """
 
-    prompt_config = PromptConfig(file_name="raw_text_ehnancer")
-    system_prompt = prompt_config.get_prompt(key="system_prompt")
+    # prompt_config = PromptConfig(file_name="raw_text_ehnancer")
+    # system_prompt = prompt_config.get_prompt(key="system_prompt")
 
-    prompt_template = ChatPromptTemplate(
-        [
-            ("system", system_prompt),
-            ("human", user_info),
-        ]
-    )
+    # prompt_template = ChatPromptTemplate(
+    #     [
+    #         ("system", system_prompt),
+    #         ("human", user_info),
+    #     ]
+    # )
 
-    llm_obj = LLM()
+    # llm_obj = LLM()
 
-    enhanced_persona = llm_obj.get_response(prompt_template=prompt_template)
+    # enhanced_persona = llm_obj.get_response(prompt_template=prompt_template)
 
     # Apply shared logic (formatting, template merging, additional validation)
     # and return the final structured resume output.
+    
     response = get_common_logic(
-        enhanced_persona=enhanced_persona, template_selected=template_name
+        enhanced_persona=user_info, template_selected=template_name
     )
 
     return response

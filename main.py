@@ -5,7 +5,8 @@ import os
 from dotenv import load_dotenv
 from fastmcp import FastMCP
 from fastmcp.server.dependencies import AccessToken, get_access_token
-from jose import jwt
+
+# from jose import jwt
 from starlette.middleware import Middleware
 from starlette.middleware.cors import CORSMiddleware
 from starlette.requests import Request as StarletteRequest
@@ -29,7 +30,11 @@ from src.mcp_server.schema import (
     UploadURLResponse,
     ValidateURL,
 )
-from src.mcp_server.services import get_upload_url
+from src.mcp_server.services import (
+    get_upload_url,
+    upload_resume_from_filesystem,
+    get_file_info_from_s3,
+)
 
 load_dotenv()
 
@@ -39,7 +44,8 @@ initialize_database()
 # Register cleanup on exit
 atexit.register(close_database)
 
-mcp = FastMCP(name="Resume Generator", auth=auth)
+# mcp = FastMCP(name="Resume Generator", auth=auth)
+mcp = FastMCP(name="resume-generator")
 
 
 # Health Check Tool
@@ -52,7 +58,7 @@ mcp = FastMCP(name="Resume Generator", auth=auth)
         "It returns the current user's ID and a simple health status ('ok' if operational)."
     ),
 )
-def check_server_health_status() -> JSONResponse:
+def check_server_health_status() -> dict:
     """
     Performs a health check on the Resume Generator MCP Server.
 
@@ -75,12 +81,13 @@ def check_server_health_status() -> JSONResponse:
     }
     ```
     """
-    access_token: AccessToken = get_access_token()
-    user_id = jwt.get_unverified_claims(access_token.token).get("sub")
+    # access_token: AccessToken = get_access_token()
+    # user_id = jwt.get_unverified_claims(access_token.token).get("sub")
+    user_id = 1
 
     status = "ok" if user_id else "unauthorized"
 
-    return JSONResponse({"user_id": user_id, "status": status})
+    return {"user_id": user_id, "status": status}
 
 
 # Generate Resume from raw input Tool
@@ -96,7 +103,7 @@ def check_server_health_status() -> JSONResponse:
 )
 def generate_resume_from_text_tool(
     user_info: str, template_name: TemplateSelectionInput
-) -> JSONResponse:
+) -> dict:
     """
     Generates a resume using free-form user-provided text and a selected template.
 
@@ -116,8 +123,9 @@ def generate_resume_from_text_tool(
             "content:: "A general message"
         }
     """
-    access_token: AccessToken = get_access_token()
-    user_id = jwt.get_unverified_claims(access_token.token)["sub"]
+    # access_token: AccessToken = get_access_token()
+    # user_id = jwt.get_unverified_claims(access_token.token)["sub"]
+    user_id = 1
 
     template: str = template_name.template_name
 
@@ -139,46 +147,72 @@ def generate_resume_from_text_tool(
         print(f"Error saving resume to database: {e}")
         # Continue even if database save fails
 
-    return JSONResponse(response)
+    return response
 
 
 # Upload File Tool
-@mcp.tool(
-    name="get_upload_url_for_resume",
-    description=(
-        "Use this tool whenever the user provides a resume file "
-        "(PDF, Word DOCX, or Image format). "
-        "This tool returns a temporary AWS S3 upload URL and a file_key. "
-        "The client must upload the actual file bytes to this URL before calling other tools. "
-        "Once the file is uploaded, the file_key should be passed to processing tools "
-        "like 'Resume Enhancer' or 'Generate Resume from Job Description and Existing Resume'."
-    ),
-)
-def generate_file_upload_url(input: UploadURLInput) -> UploadURLResponse:
+# @mcp.tool(
+#     name="get_upload_url_for_resume",
+#     description=(
+#         "Use this tool whenever the user provides a resume file "
+#         "(PDF, Word DOCX, or Image format). "
+#         "This tool returns a temporary AWS S3 upload URL and a file_key. "
+#         "The client must upload the actual file bytes to this URL before calling other tools. "
+#         "Once the file is uploaded, the file_key should be passed to processing tools "
+#         "like 'resume-enhancer' or 'generate-resume-from-job-description-and-existing-resume'."
+#     ),
+# )
+# def get_resume_upload_url(filename: str, content_type: str) -> dict:
+#     """
+#     Generates a temporary AWS S3 pre-signed URL for uploading a resume file.
+
+#     This tool should be called whenever a user provides a resume in PDF, DOCX, or image format.
+
+#     Returns a URL the user can upload their resume to.
+#     """
+#     response = get_upload_url(input=input)
+#     print("Got resume!")
+#     return response
+
+
+# ... your existing tools ...
+
+# Upload Reume From file tool
+@mcp.tool()
+async def upload_resume_file(file_path: str) -> dict:
     """
-    Generates a temporary AWS S3 pre-signed URL for uploading a resume file.
+    Upload a resume file directly from the local filesystem to S3.
+    Use this tool when the user provides a resume file path.
 
-    This tool should be called whenever a user provides a resume in PDF, DOCX, or image format.
-    It does not handle the actual upload — instead, it returns an `UploadURLResponse` object
-    with the following fields:
+    Args:
+        file_path: Absolute path to the resume file (PDF, DOCX, PNG, JPG, JPEG)
 
-    - `upload_url` (str): The temporary URL where the file should be uploaded.
-    - `file_key` (str): The key identifier used to reference the uploaded file later.
-
-    Once the file is uploaded, include the `UploadURLResponse` in subsequent tool calls.
+    Returns:
+        dict with file_key that can be used with resume-enhancer or generate-resume-from-jd-and-existing
     """
-    response = get_upload_url(input=input)
-    return response
+    return upload_resume_from_filesystem(file_path)
+
+# Check Uploaded file exists in S3
+@mcp.tool()
+async def check_uploaded_file(file_key: str) -> dict:
+    """
+    Check if a file exists in S3 and get its metadata.
+
+    Args:
+        file_key: The S3 key of the uploaded file
+
+    Returns:
+        dict with file information
+    """
+    return get_file_info_from_s3(file_key)
 
 
 # Upload file and select resume (Resume Enhancer)
 @mcp.tool(
-    name="Resume Enhancer",
+    name="resume-enhancer",
     description="Enhance an uploaded resume using a selected template; returns DOCX and PDF download URLs and saves a resume record (non-blocking).",
 )
-def enhance_resume_from_existing(
-    existing_resume: UploadURLResponse, template_name: TemplateSelectionInput
-):
+def enhance_resume_from_existing(file_key: str, template_name: TemplateSelectionInput):
     """
     Enhance an existing resume with a chosen template and return download links.
 
@@ -193,10 +227,9 @@ def enhance_resume_from_existing(
                     "content:: "A general message"
                 }
     """
-    access_token: AccessToken = get_access_token()
-    user_id = jwt.get_unverified_claims(access_token.token)["sub"]
-
-    file_key = existing_resume.file_key
+    # access_token: AccessToken = get_access_token()
+    # user_id = jwt.get_unverified_claims(access_token.token)["sub"]
+    user_id = 1
 
     template_selected = template_name.template_name
 
@@ -220,16 +253,16 @@ def enhance_resume_from_existing(
         print(f"Error saving resume to database: {e}")
         # Continue even if database save fails
 
-    return JSONResponse(response)
+    return response
 
 
 # Generate Resume from Job Description and Existing Resume
 @mcp.tool(
-    title="Generate Resume from Job Description and Existing Resume",
+    title="generate-resume-from-job-description-and-existing-resume",
     description="Generates a tailored resume by combining an existing resume with a provided job description using the selected template.",
 )
 def generate_resume_from_jd_and_existing(
-    existing_resume: UploadURLResponse,
+    file_key: str,
     template_name: TemplateSelectionInput,
     job_descrption: str,
 ):
@@ -247,10 +280,9 @@ def generate_resume_from_jd_and_existing(
                       DOCX and PDF resumes along with related metadata.
     """
 
-    access_token: AccessToken = get_access_token()
-    user_id = jwt.get_unverified_claims(access_token.token)["sub"]
-
-    file_key = existing_resume.file_key
+    # access_token: AccessToken = get_access_token()
+    # user_id = jwt.get_unverified_claims(access_token.token)["sub"]
+    user_id = 1
 
     template_selected = template_name.template_name
 
@@ -276,12 +308,12 @@ def generate_resume_from_jd_and_existing(
         print(f"Error saving resume to database: {e}")
         # Continue even if database save fails
 
-    return JSONResponse(response)
+    return response
 
 
 # Get resume from Linkedin URL
 @mcp.tool(
-    title="Generate Resume from LinkedIn Profile",
+    title="generate-resume-from-linkedin-profile",
     description=(
         "Generates a professional, ready-to-send resume directly from a user's LinkedIn profile. "
         "The tool scrapes structured data from the provided LinkedIn URL, processes it through AI-based "
@@ -291,7 +323,7 @@ def generate_resume_from_jd_and_existing(
     ),
 )
 def generate_resume_from_linkedin_profile(
-    linkedin_url: ValidateURL,
+    linkedin_url: str,
     template_name: TemplateSelectionInput,
 ):
     """
@@ -317,14 +349,14 @@ def generate_resume_from_linkedin_profile(
         Both links are temporary and automatically expire within 7 hours.
     """
 
-    access_token: AccessToken = get_access_token()
-    user_id = jwt.get_unverified_claims(access_token.token)["sub"]
+    # access_token: AccessToken = get_access_token()
+    # user_id = jwt.get_unverified_claims(access_token.token)["sub"]
+    user_id = 1
 
-    url = linkedin_url.link
     template_selected = template_name.template_name
 
     # Get response from LinkedIn
-    response = linkedin(linkedin_url=url, template_selected=template_selected)
+    response = linkedin(linkedin_url=linkedin_url, template_selected=template_selected)
 
     docx_link = response.get("docx_resume_url")
     pdf_link = response.get("pdf_resume_url")
@@ -342,36 +374,38 @@ def generate_resume_from_linkedin_profile(
         print(f"Error saving resume to database: {e}")
         # Continue even if database save fails
 
-    return JSONResponse(response)
+    return response
 
 
-# Auth Custom Route
-@mcp.custom_route("/.well-known/oauth-protected-resource", methods=["GET", "OPTIONS"])
-def oauth_metadata(request: StarletteRequest) -> JSONResponse:
-    base_url = str(request.base_url).rstrip("/")
+# # Auth Custom Route
+# @mcp.custom_route("/.well-known/oauth-protected-resource", methods=["GET", "OPTIONS"])
+# def oauth_metadata(request: StarletteRequest) -> JSONResponse:
+#     base_url = str(request.base_url).rstrip("/")
 
-    return JSONResponse(
-        {
-            "resource": base_url,
-            "authorization_servers": [os.getenv("STYTCH_DOMAIN")],
-            "scopes_supported": ["read", "write"],
-            "bearer_methods_supported": ["header", "body"],
-        }
-    )
+#     return JSONResponse(
+#         {
+#             "resource": base_url,
+#             "authorization_servers": [os.getenv("STYTCH_DOMAIN")],
+#             "scopes_supported": ["read", "write"],
+#             "bearer_methods_supported": ["header", "body"],
+#         }
+#     )
 
 
+# if __name__ == "__main__":
+#     mcp.run(
+#         transport="http",
+#         host="0.0.0.0",
+#         port=int(os.getenv("PORT", 8000)),
+#         middleware=[
+#             Middleware(
+#                 CORSMiddleware,
+#                 allow_origins=["*"],
+#                 allow_credentials=True,
+#                 allow_methods=["*"],
+#                 allow_headers=["*"],
+#             )
+#         ],
+#     )
 if __name__ == "__main__":
-    mcp.run(
-        transport="http",
-        host="0.0.0.0",
-        port=int(os.getenv("PORT", 8000)),
-        middleware=[
-            Middleware(
-                CORSMiddleware,
-                allow_origins=["*"],
-                allow_credentials=True,
-                allow_methods=["*"],
-                allow_headers=["*"],
-            )
-        ],
-    )
+    mcp.run()

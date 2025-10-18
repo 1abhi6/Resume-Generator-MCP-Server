@@ -3,7 +3,7 @@ import os
 from dotenv import load_dotenv
 from langchain_core.prompts import ChatPromptTemplate
 
-from src.mcp_server.agents import LLM
+from src.mcp_server.agents import LLM, LightLLM
 from src.mcp_server.prompts import PromptConfig
 from src.mcp_server.schema import ProcessResumeInput
 from src.mcp_server.services import (
@@ -49,18 +49,13 @@ def enhance_resume_for_existing_resume(file_key: str, template_selected: str) ->
     prompt_config = PromptConfig(file_name="ocr")
     system_prompt = prompt_config.get_prompt(key="system_prompt")
 
-    prompt_template = ChatPromptTemplate(
-        [
-            ("system", system_prompt),
-            ("human", description),
-        ]
+    llm_obj = LightLLM()
+    enhanced_persona = llm_obj.get_response(
+        system_prompt=system_prompt, user_prompt=description
     )
 
-    llm_obj = LLM()
-    enhanced_persona = llm_obj.get_response(prompt_template=prompt_template)
-
     response = get_common_logic(
-        enhanced_description=enhanced_persona,
+        enhanced_persona=enhanced_persona,
         template_selected=template_selected,
         bucket_name=bucket_name,
     )

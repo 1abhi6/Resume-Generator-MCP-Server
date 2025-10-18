@@ -4,7 +4,7 @@ import os
 from dotenv import load_dotenv
 from langchain_core.prompts import ChatPromptTemplate
 
-from src.mcp_server.agents import LLM
+from src.mcp_server.agents import LLM, LightLLM
 from src.mcp_server.prompts import PromptConfig
 from src.mcp_server.schema import ProcessResumeInput
 from src.mcp_server.services import (
@@ -46,12 +46,12 @@ def job_match(file_key: str, template_selected: str, job_description: str) -> di
         bucket_name=bucket_name, file_key=file_key
     )
 
-    print("GOT DESCRIPTION")
+    # print("GOT DESCRIPTION")
     # Enhance Transcription/OCR
     prompt_config = PromptConfig(file_name="ocr")
     system_prompt = prompt_config.get_prompt(key="system_prompt")
 
-    print("System Prompt: ", system_prompt)
+    # print("System Prompt: ", system_prompt)
 
     prompt_template = ChatPromptTemplate(
         [
@@ -60,13 +60,13 @@ def job_match(file_key: str, template_selected: str, job_description: str) -> di
         ]
     )
 
-    print("Prompt Template: ", prompt_template)
+    # print("Prompt Template: ", prompt_template)
 
     llm_obj = LLM()
     enhanced_persona = llm_obj.get_response(prompt_template=prompt_template)
-    print(":::::::::::::::::ENHANCED PERSONA::::::::::::::::::::::\n", enhanced_persona)
+    # print(":::::::::::::::::ENHANCED PERSONA::::::::::::::::::::::\n", enhanced_persona)
 
-    print("EHNANCED DESCRIPTION")
+    # print("EHNANCED DESCRIPTION")
 
     # Enhance Job Description
     prompt_config = PromptConfig(file_name="jd_ehnancer")
@@ -81,8 +81,6 @@ def job_match(file_key: str, template_selected: str, job_description: str) -> di
 
     llm_obj = LLM()
     enhanced_jd = llm_obj.get_response(prompt_template=prompt_template)
-
-    
 
     # Get the new and updated description for resume combining the enhanced resume and enhanced JD
     prompt_config = PromptConfig(file_name="updated_persona")
