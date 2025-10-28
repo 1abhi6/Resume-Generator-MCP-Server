@@ -341,10 +341,12 @@ def generate_resume_from_linkedin_profile(
     return response
 
 
-# # Auth Custom Route
+# Auth Custom Route
 @mcp.custom_route("/.well-known/oauth-protected-resource", methods=["GET", "OPTIONS"])
 def oauth_metadata(request: StarletteRequest) -> JSONResponse:
     base_url = str(request.base_url).rstrip("/")
+
+    print(base_url)
 
     return JSONResponse(
         {
