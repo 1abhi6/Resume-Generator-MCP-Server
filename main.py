@@ -1,12 +1,10 @@
-# FastMCP server entry point
 import atexit
 import os
 
 from dotenv import load_dotenv
 from fastmcp import FastMCP
 from fastmcp.server.dependencies import AccessToken, get_access_token
-
-# from jose import jwt
+from jose import jwt
 from starlette.middleware import Middleware
 from starlette.middleware.cors import CORSMiddleware
 from starlette.requests import Request as StarletteRequest
@@ -24,16 +22,10 @@ from src.mcp_server.routes import (
     job_match,
     linkedin,
 )
-from src.mcp_server.schema import (
-    TemplateSelectionInput,
-    UploadURLInput,
-    UploadURLResponse,
-    ValidateURL,
-)
+from src.mcp_server.schema import TemplateSelectionInput
 from src.mcp_server.services import (
-    get_upload_url,
-    upload_resume_from_filesystem,
     get_file_info_from_s3,
+    upload_resume_from_filesystem,
 )
 
 load_dotenv()
@@ -44,8 +36,7 @@ initialize_database()
 # Register cleanup on exit
 atexit.register(close_database)
 
-# mcp = FastMCP(name="Resume Generator", auth=auth)
-mcp = FastMCP(name="resume-generator")
+mcp = FastMCP(name="Resume Generator", auth=auth)
 
 
 # Health Check Tool
@@ -81,9 +72,8 @@ def check_server_health_status() -> dict:
     }
     ```
     """
-    # access_token: AccessToken = get_access_token()
-    # user_id = jwt.get_unverified_claims(access_token.token).get("sub")
-    user_id = 1
+    access_token: AccessToken = get_access_token()
+    user_id = jwt.get_unverified_claims(access_token.token).get("sub")
 
     status = "ok" if user_id else "unauthorized"
 
@@ -125,6 +115,10 @@ def generate_resume_from_text_tool(
     """
     # access_token: AccessToken = get_access_token()
     # user_id = jwt.get_unverified_claims(access_token.token)["sub"]
+    initialize_database()
+
+    # Register cleanup on exit
+    atexit.register(close_database)
     user_id = 1
 
     template: str = template_name.template_name
@@ -150,33 +144,6 @@ def generate_resume_from_text_tool(
     return response
 
 
-# Upload File Tool
-# @mcp.tool(
-#     name="get_upload_url_for_resume",
-#     description=(
-#         "Use this tool whenever the user provides a resume file "
-#         "(PDF, Word DOCX, or Image format). "
-#         "This tool returns a temporary AWS S3 upload URL and a file_key. "
-#         "The client must upload the actual file bytes to this URL before calling other tools. "
-#         "Once the file is uploaded, the file_key should be passed to processing tools "
-#         "like 'resume-enhancer' or 'generate-resume-from-job-description-and-existing-resume'."
-#     ),
-# )
-# def get_resume_upload_url(filename: str, content_type: str) -> dict:
-#     """
-#     Generates a temporary AWS S3 pre-signed URL for uploading a resume file.
-
-#     This tool should be called whenever a user provides a resume in PDF, DOCX, or image format.
-
-#     Returns a URL the user can upload their resume to.
-#     """
-#     response = get_upload_url(input=input)
-#     print("Got resume!")
-#     return response
-
-
-# ... your existing tools ...
-
 # Upload Reume From file tool
 @mcp.tool()
 async def upload_resume_file(file_path: str) -> dict:
@@ -191,6 +158,7 @@ async def upload_resume_file(file_path: str) -> dict:
         dict with file_key that can be used with resume-enhancer or generate-resume-from-jd-and-existing
     """
     return upload_resume_from_filesystem(file_path)
+
 
 # Check Uploaded file exists in S3
 @mcp.tool()
@@ -217,19 +185,18 @@ def enhance_resume_from_existing(file_key: str, template_name: TemplateSelection
     Enhance an existing resume with a chosen template and return download links.
 
     Parameters
-    - existing_resume (UploadURLResponse): Get it from `get_upload_url_for_resume` tool
-    - template_name (TemplateSelectionInput): User's template choice.
+    - file_key: AWS File Key
+    - template_name: Name of the template
 
     Returns: JSONResponse containing:
                 {
                     "docx_resume_url": "<S3 link to Word resume>",
                     "pdf_resume_url": "<S3 link to PDF resume>",
-                    "content:: "A general message"
+                    "content": "A general message"
                 }
     """
-    # access_token: AccessToken = get_access_token()
-    # user_id = jwt.get_unverified_claims(access_token.token)["sub"]
-    user_id = 1
+    access_token: AccessToken = get_access_token()
+    user_id = jwt.get_unverified_claims(access_token.token)["sub"]
 
     template_selected = template_name.template_name
 
@@ -271,7 +238,7 @@ def generate_resume_from_jd_and_existing(
     with a provided job description and rendering it using a chosen template.
 
     Args:
-        existing_resume (UploadURLResponse): The uploaded existing resume reference (file key).
+        file_key: The file key from S3
         template_name (TemplateSelectionInput): The selected resume template name.
         job_descrption (str): The job description text used to tailor the resume.
 
@@ -280,9 +247,8 @@ def generate_resume_from_jd_and_existing(
                       DOCX and PDF resumes along with related metadata.
     """
 
-    # access_token: AccessToken = get_access_token()
-    # user_id = jwt.get_unverified_claims(access_token.token)["sub"]
-    user_id = 1
+    access_token: AccessToken = get_access_token()
+    user_id = jwt.get_unverified_claims(access_token.token)["sub"]
 
     template_selected = template_name.template_name
 
@@ -335,9 +301,8 @@ def generate_resume_from_linkedin_profile(
 
     Parameters
     ----------
-    linkedin_url : ValidateURL
-        A validated LinkedIn profile URL provided by the user.
-    template_name : TemplateSelectionInput
+    linkedin_url: A validated LinkedIn profile URL provided by the user.
+    template_name: TemplateSelectionInput
         The name of the predefined resume template selected by the user.
 
     Returns
@@ -349,9 +314,8 @@ def generate_resume_from_linkedin_profile(
         Both links are temporary and automatically expire within 7 hours.
     """
 
-    # access_token: AccessToken = get_access_token()
-    # user_id = jwt.get_unverified_claims(access_token.token)["sub"]
-    user_id = 1
+    access_token: AccessToken = get_access_token()
+    user_id = jwt.get_unverified_claims(access_token.token)["sub"]
 
     template_selected = template_name.template_name
 
@@ -378,34 +342,32 @@ def generate_resume_from_linkedin_profile(
 
 
 # # Auth Custom Route
-# @mcp.custom_route("/.well-known/oauth-protected-resource", methods=["GET", "OPTIONS"])
-# def oauth_metadata(request: StarletteRequest) -> JSONResponse:
-#     base_url = str(request.base_url).rstrip("/")
+@mcp.custom_route("/.well-known/oauth-protected-resource", methods=["GET", "OPTIONS"])
+def oauth_metadata(request: StarletteRequest) -> JSONResponse:
+    base_url = str(request.base_url).rstrip("/")
 
-#     return JSONResponse(
-#         {
-#             "resource": base_url,
-#             "authorization_servers": [os.getenv("STYTCH_DOMAIN")],
-#             "scopes_supported": ["read", "write"],
-#             "bearer_methods_supported": ["header", "body"],
-#         }
-#     )
+    return JSONResponse(
+        {
+            "resource": base_url,
+            "authorization_servers": [os.getenv("STYTCH_DOMAIN")],
+            "scopes_supported": ["read", "write"],
+            "bearer_methods_supported": ["header", "body"],
+        }
+    )
 
 
-# if __name__ == "__main__":
-#     mcp.run(
-#         transport="http",
-#         host="0.0.0.0",
-#         port=int(os.getenv("PORT", 8000)),
-#         middleware=[
-#             Middleware(
-#                 CORSMiddleware,
-#                 allow_origins=["*"],
-#                 allow_credentials=True,
-#                 allow_methods=["*"],
-#                 allow_headers=["*"],
-#             )
-#         ],
-#     )
 if __name__ == "__main__":
-    mcp.run()
+    mcp.run(
+        transport="http",
+        host="0.0.0.0",
+        port=int(os.getenv("PORT", 8000)),
+        middleware=[
+            Middleware(
+                CORSMiddleware,
+                allow_origins=["*"],
+                allow_credentials=True,
+                allow_methods=["*"],
+                allow_headers=["*"],
+            )
+        ],
+    )
