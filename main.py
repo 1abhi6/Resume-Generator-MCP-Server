@@ -146,18 +146,31 @@ def generate_resume_from_text_tool(
 
 # Upload Reume From file tool
 @mcp.tool()
-async def upload_resume_file(file_path: str) -> dict:
+async def upload_resume_file() -> dict:
     """
-    Upload a resume file directly from the local filesystem to S3.
-    Use this tool when the user provides a resume file path.
-
-    Args:
-        file_path: Absolute path to the resume file (PDF, DOCX, PNG, JPG, JPEG)
+    Use this tool when the user says it already has a resume
 
     Returns:
-        dict with file_key that can be used with resume-enhancer or generate-resume-from-jd-and-existing
+        dict with upload_url and message. There will be a frontend link where use can upload its resume and in return it will get a file key and ask user to paste that file key again to chat interface.
     """
-    return upload_resume_from_filesystem(file_path)
+    return {
+        "upload_url": "https://upload-your-resume.vercel.app/",
+        "message": "Upload your resume to this url and this will return file key paste that file key again back to the LLM"
+    }
+
+# @mcp.tool()
+# async def upload_resume_file(file_path: str) -> dict:
+#     """
+#     Upload a resume file directly from the local filesystem to S3.
+#     Use this tool when the user provides a resume file path.
+
+#     Args:
+#         file_path: Absolute path to the resume file (PDF, DOCX, PNG, JPG, JPEG)
+
+#     Returns:
+#         dict with file_key that can be used with resume-enhancer or generate-resume-from-jd-and-existing
+#     """
+#     return upload_resume_from_filesystem(file_path)
 
 
 # Check Uploaded file exists in S3
